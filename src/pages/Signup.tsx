@@ -1,4 +1,4 @@
-// import { useState } from "react";
+import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { SignUpValidation } from "../validations/Singupvalidation";
 import axios from "axios";
@@ -6,6 +6,7 @@ import { GetUser, SignupRoute } from "../utils/Api";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/features/userSlice";
 import { useNavigate } from "react-router-dom";
+import LogoImage from "../assets/LogoImage.webp";
 
 interface SignupData {
   name: string;
@@ -23,7 +24,7 @@ const initialValues: SignupData = {
 
 const Signup = () => {
   const dispatch = useDispatch();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const handleSignup = async (values: SignupData) => {
     console.log("working");
     const { name, email, password, confirmPassword } = values;
@@ -45,15 +46,8 @@ const Signup = () => {
 
       console.log("Signup response:", response.data.data);
       if (response.data.success) {
-        // console.log("first");
-        // localStorage.setItem(
-        //   "current-user",
-        //   JSON.stringify(response.data.data)
-        // );
-        // console.log(localStorage.getItem("current-user"));
-        dispatch(setUserData(response.data.data))
-        navigate('/setAvatar')
-        
+        dispatch(setUserData(response.data.data));
+        navigate("/setAvatar");
       } else {
         console.log("first-else");
       }
@@ -63,8 +57,14 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-background-image bg-cover bg-center">
+      <div className=" p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div className="group flex flex-col items-center mb-4">
+          <img src={LogoImage} alt="Logo" className="h-24 w-24" />
+          <h1 className="text-gray-700 mt-2 text-3xl group-hover:text-violet-900">
+            SpeakEasy
+          </h1>
+        </div>
         <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
         <Formik
           initialValues={initialValues}
@@ -158,6 +158,14 @@ const Signup = () => {
             </div>
           </Form>
         </Formik>
+        <div className="flex justify-end mt-4">
+          <h1
+            className="text-blue-800 cursor-pointer text-xl"
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </h1>
+        </div>
       </div>
     </div>
   );

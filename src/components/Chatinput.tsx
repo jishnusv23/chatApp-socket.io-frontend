@@ -21,10 +21,7 @@ const Chatinput:React.FC<ChatinputProps> = ({handleMsg}) => {
   };
 
   const handleEmojiClick = (EmojiClickData: EmojiObject) => {
-    // console.log(
-    //   "🚀 ~ file: Chatinput.tsx:21 ~ handleEmojiClick ~ EmojiClickData:",
-    //   EmojiClickData
-    // );
+
     setMsg((prevMsg) => prevMsg + EmojiClickData.emoji);
   };
 

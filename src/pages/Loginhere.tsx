@@ -1,4 +1,4 @@
-// import React from 'react'
+import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { LoginValidation } from "../validations/LoginValidation";
 import axios from "axios";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/features/userSlice";
 import { useSelector } from "react-redux";
+import LogoImage from "../assets/LogoImage.webp";
 
 interface loginData {
   email: string;
@@ -20,39 +21,43 @@ const initialValues: loginData = {
 
 const Loginhere = () => {
   const dispatch = useDispatch();
-  const usenavigate = useNavigate();
-  const data = useSelector((state:any) => state.user.userData);
+  const Navigate = useNavigate();
+  const data = useSelector((state: any) => state.user.userData);
   const handleSubmit = async ({ email, password }: loginData) => {
     try {
       console.log("Attempting to login with:", { email, password });
       const data = await axios.post(LoginRoute, { email, password });
       if (data.data.success) {
-        console.log("Login successful, response data:", data);
+        // console.log("Login successful, response data:", data);
         const getUser = await axios.post(`${GetUser}/${email}`);
-        console.log(
-          "🚀 ~ file: Signup.tsx:48 ~ handleSignup ~ getUser:",
-          getUser
-        );
+        // console.log(
+        //   "🚀 ~ file: Signup.tsx:48 ~ handleSignup ~ getUser:",
+        //   getUser
+        // );
         dispatch(setUserData(getUser.data.data));
-        // localStorage.setItem("current-user",JSON.stringify(getUser.data.data));
-        // console.log(localStorage.getItem('current-user'))
       }
-      usenavigate("/");
+      Navigate("/");
     } catch (error) {
       console.error("Error while showing in login", error);
     }
   };
-  
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+    <div className="min-h-screen flex items-center justify-center bg-background-image bg-cover bg-center">
+      <div className=" p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <div className="group flex flex-col items-center mb-4">
+          <img src={LogoImage} alt="Logo" className="h-24 w-24" />
+          <h1 className="text-gray-700 mt-2 text-3xl group-hover:text-violet-900">
+            SpeakEasy
+          </h1>
+        </div>
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         <Formik
           initialValues={initialValues}
           validationSchema={LoginValidation}
           onSubmit={handleSubmit}
         >
-          {({}) => (
+          {() => (
             <Form>
               <div className="mb-4">
                 <label
@@ -105,6 +110,12 @@ const Loginhere = () => {
             </Form>
           )}
         </Formik>
+        <h1
+          className="flex justify-end text-blue-800 mt-4 cursor-pointer text-xl"
+          onClick={() => Navigate("/signup")}
+        >
+          signup
+        </h1>
       </div>
     </div>
   );

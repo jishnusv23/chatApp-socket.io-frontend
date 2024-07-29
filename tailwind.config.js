@@ -9,6 +9,9 @@ export default {
           "scrollbar-track": "gray-900",
         },
       },
+      backgroundImage: {
+        "background-image": "url('/src/assets/back-ground.webp')",
+      },
     },
   },
   plugins: [require("tailwind-scrollbar-hide")],

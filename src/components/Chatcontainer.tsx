@@ -4,30 +4,35 @@ import Chatinput from "./Chatinput";
 import axios from "axios";
 import { AddMsgRoute, GetAllMsg, host } from "../utils/Api";
 import { useSelector } from "react-redux";
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 
 interface ChatContainerProps {
   CurrenChat: any;
   ChatRoom: any;
+  socket: Socket;
 }
 
 const Chatcontainer: React.FC<ChatContainerProps> = ({
   CurrenChat,
   ChatRoom,
+  socket,
 }) => {
+  // console.log("🚀 ~ file: Chatcontainer.tsx:20 ~ ChatRoom:", ChatRoom)
+  // console.log("🚀 ~ file: Chatcontainer.tsx:20 ~ CurrenChat:", CurrenChat)
   const currentUser = useSelector((state: any) => state.user.userData);
   const [message, setMessage] = useState<any>([]);
-  const [onlineUsers, setOnlineUsers] = useState([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // console.log("🚀 ~ file: Chatcontainer.tsx:22 ~ message:", message);
 
   if (!CurrenChat) {
     return null;
   }
 
   useEffect(() => {
-    const GettAll = async () => {
+    const fetchMessages = async () => {
       try {
         const data = await axios.get(`${GetAllMsg}/${ChatRoom.chatId}`);
+
         if (data.data.success) {
           setMessage(data.data.messages);
         }
@@ -35,49 +40,45 @@ const Chatcontainer: React.FC<ChatContainerProps> = ({
         console.error(err);
       }
     };
-    GettAll();
+    fetchMessages();
   }, [ChatRoom.chatId]);
 
   useEffect(() => {
-    const socket: Socket = io(`${host}`);
-
-    socket.on("connect", () => {
-      console.log("👽 connected socket server");
-      socket.emit("add-online-users", currentUser._id);
-    });
-
-    socket.on("getOnlineUsers", (data: []) => {
-      console.log("getOnline");
-      setOnlineUsers(data);
-    });
-
     socket.on("get-message", (reciverData: any) => {
-      console.log("get message", reciverData);
+      console.log(
+        "🚀 ~ file: Chatcontainer.tsx:51 ~ socket.on ~ reciverData444444444:",
+        reciverData
+      );
+
       setMessage((prev: any) => [...prev, reciverData]);
     });
 
     return () => {
-      socket.disconnect();
+      console.log("Cleaning up socket listeners...");
+      socket.off("get-message");
     };
   }, [currentUser._id]);
 
   const handleMsg = async (msg: string) => {
-    let msgBdy = {
+    const msgBdy = {
       senderId: currentUser._id,
       chatId: ChatRoom.chatId,
       message: msg,
     };
-    const socket: Socket = io(`${host}`);
-    socket.emit("send-message", {
+    socket.emit("send-messsage", {
       ...msgBdy,
       reciverId: ChatRoom.reciverId,
     });
-    const data = await axios.post(AddMsgRoute, {
-      senderId: currentUser._id,
-      chatId: ChatRoom.chatId,
-      message: msg,
-    });
-    setMessage(data.data.allMsg);
+    try {
+      const data = await axios.post(AddMsgRoute, {
+        senderId: currentUser._id,
+        chatId: ChatRoom.chatId,
+        message: msg,
+      });
+      setMessage(data.data.allMsg);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -97,18 +98,19 @@ const Chatcontainer: React.FC<ChatContainerProps> = ({
           />
           <div>
             <div className="text-lg font-semibold">{CurrenChat.name}</div>
+            <h4>last seen</h4>
           </div>
         </div>
         <Logout />
       </div>
       <div
-        className="flex-1 bg-gray-800 p-4 overflow-y-auto scrollbar-hide  "
+        className="flex-1 bg-gray-800 p-4 overflow-y-auto scrollbar-hide"
         style={{ maxHeight: "calc(100vh - 160px)" }}
       >
         <div className="flex flex-col gap-2">
-          {message.map((msg: any) => (
+          {message.map((msg: any, index: number) => (
             <div
-              key={msg._id}
+              key={index}
               className={`flex ${
                 msg.senderId === currentUser._id
                   ? "justify-end"

@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Contact from "../components/Contact";
-import { ChatRoomCreateRouter, GetAllUser } from "../utils/Api";
+import { ChatRoomCreateRouter, GetAllUser, host } from "../utils/Api";
 import Welcome from "../components/Welcome";
 import { useSelector } from "react-redux";
+import { Socket, io } from "socket.io-client";
 import Chatcontainer from "../components/Chatcontainer";
+
 const Container: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="h-screen w-screen flex justify-center items-center bg-blue-950 p-0 m-0">
     <div className="h-full w-9/12 bg-black grid grid-cols-[1fr_3fr] p-0 m-0">
@@ -25,38 +27,47 @@ const Chat: React.FC = () => {
   });
   const navigate = useNavigate();
   const users = useSelector((state: any) => state.user.userData);
-  // console.log("🚀 ~ file: Chat.tsx:28 ~ users:", users);
+  const socket: Socket = io(`${host}`, { autoConnect: false });
 
   useEffect(() => {
-    const checking = async (): Promise<void> => {
-      try {
-        if (!users) {
-          navigate("/login");
-        } else {
-          setCurrentUser(users);
-        }
-      } catch (err) {
-        console.error("Error fetching user from localStorage in chat", err);
-      }
-    };
-    checking();
-  }, [navigate]);
+    if (users) {
+      setCurrentUser(users);
+      socket.connect();
+      socket.emit("add-online-users", users._id);
+    } else {
+      navigate("/login");
+    }
+  }, [users, navigate, socket]);
 
   useEffect(() => {
-    const passing = async (): Promise<void> => {
-      try {
-        if (users && users.isAvatarImageset) {
+    if (users && users.isAvatarImageset) {
+      const fetchContacts = async () => {
+        try {
           const { data } = await axios.get(`${GetAllUser}/${currentUser._id}`);
           setContact(data.data);
-        } else {
-          navigate("/setAvatar");
+        } catch (err) {
+          console.error(err);
         }
-      } catch (err) {
-        console.error(err);
-      }
+      };
+      fetchContacts();
+    } else {
+      navigate("/setAvatar");
+    }
+  }, [currentUser, navigate]);
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("👽 connected socket server");
+      socket.emit("add-online-users", currentUser._id);
+    });
+
+    return () => {
+      socket.off("connect");
+      console.log("stop here also ");
+      socket.disconnect();
     };
-    passing();
-  }, [currentUser]);
+  }, [socket]);
+
   const handleChange = async (chat: any) => {
     setCurrentChat(chat);
     try {
@@ -69,17 +80,12 @@ const Chat: React.FC = () => {
       });
 
       if (response.data.success) {
-        console.log(
-          "🚀 ~ file: Chat.tsx:70 ~ handleChange ~ response:",
-          response
-        );
         setChatRoom({
           senderId: users._id,
           reciverId: chat._id,
           chatId: response.data.ChatRoom._id,
         });
       }
-      // console.log("🚀 ~ file: Chat.tsx:65 ~ handleChange ~ response:", response)
     } catch (err) {
       console.error(err);
     }
@@ -87,10 +93,14 @@ const Chat: React.FC = () => {
 
   return (
     <Container>
-      <Contact contact={contact} changeChat={handleChange} />
+      <Contact contact={contact} changeChat={handleChange} socket={socket} />
       <div className="h-full w-full">
         {currentChat ? (
-          <Chatcontainer ChatRoom={ChatRoom} CurrenChat={currentChat} />
+          <Chatcontainer
+            ChatRoom={ChatRoom}
+            CurrenChat={currentChat}
+            socket={socket}
+          />
         ) : (
           <Welcome />
         )}
