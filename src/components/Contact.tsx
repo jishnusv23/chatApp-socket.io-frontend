@@ -8,26 +8,28 @@ interface ContactProps {
   contact: any[];
   changeChat: (chat: any) => void;
   socket: Socket;
+  onlineUsers:any[]
 }
 
-const Contact: React.FC<ContactProps> = ({ contact, changeChat, socket }) => {
-  const [onlineUsers, setOnlineUsers] = useState([]);
+const Contact: React.FC<ContactProps> = ({
+  contact,
+  changeChat,
+  socket,
+  onlineUsers,
+}) => {
   const [currentSelected, setCurrentSelected] = useState<number | undefined>(
     undefined
   );
+
   const currentUser = useSelector((state: any) => state.user.userData);
-  console.log("🚀 ~ file: Contact.tsx:14 ~ onlineUsers:", onlineUsers);
+  // console.log("🚀 ~ file: Contact.tsx:14 ~ onlineUsers:", onlineUsers);
   useEffect(() => {
     // const socket: Socket = io(`${host}`);
     // socket.on("connect", () => {
     //   console.log("👽 connected socket server");
     //   socket.emit("add-online-users", currentUser._id);
     // });
-    socket.on("getOnlineUsers", (data: []) => {
-      console.log("getOnline");
-      setOnlineUsers(data);
-    });
-  });
+  }, [contact]);
 
   const handleChange = (index: number, contact: any) => {
     setCurrentSelected(index);

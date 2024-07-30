@@ -10,7 +10,7 @@ export default {
         },
       },
       backgroundImage: {
-        "background-image": "url('/src/assets/back-ground.webp')",
+        "background-image": "url('/src/assets/images.jpeg')",
       },
     },
   },

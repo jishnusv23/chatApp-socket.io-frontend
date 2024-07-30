@@ -3,7 +3,7 @@ import Picker from "emoji-picker-react";
 import { IoMdSend } from "react-icons/io";
 import { BsEmojiSmileFill } from "react-icons/bs";
 
-// Define the type for the emoji object
+
 interface EmojiObject {
   emoji: string;
   name?: string;
@@ -30,7 +30,7 @@ const Chatinput:React.FC<ChatinputProps> = ({handleMsg}) => {
     if (msg.trim()) {
       console.log("Message sent:", msg);
       handleMsg(msg)
-      setMsg(""); // Clear the input field after sending the message
+      setMsg(""); //*clear
     }
   };
 

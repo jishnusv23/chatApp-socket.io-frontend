@@ -61,11 +61,13 @@ const Signup = () => {
       <div className=" p-8 rounded-lg shadow-lg w-full max-w-md">
         <div className="group flex flex-col items-center mb-4">
           <img src={LogoImage} alt="Logo" className="h-24 w-24" />
-          <h1 className="text-gray-700 mt-2 text-3xl group-hover:text-violet-900">
+          <h1 className="text-white mt-2 text-3xl group-hover:text-violet-900">
             SpeakEasy
           </h1>
         </div>
-        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-white">
+          Sign Up
+        </h2>
         <Formik
           initialValues={initialValues}
           validationSchema={SignUpValidation}
@@ -151,7 +153,7 @@ const Signup = () => {
             <div>
               <button
                 type="submit"
-                className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full py-2 px-4 bg-black hover:bg-blue-600 text-white font-semibold rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Sign Up
               </button>
@@ -160,7 +162,7 @@ const Signup = () => {
         </Formik>
         <div className="flex justify-end mt-4">
           <h1
-            className="text-blue-800 cursor-pointer text-xl"
+            className="text-white  hover:text-blue-600 cursor-pointer text-xl"
             onClick={() => navigate("/login")}
           >
             Login

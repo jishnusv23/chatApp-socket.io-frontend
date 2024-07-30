@@ -47,11 +47,13 @@ const Loginhere = () => {
       <div className=" p-8 rounded-lg shadow-lg w-full max-w-sm">
         <div className="group flex flex-col items-center mb-4">
           <img src={LogoImage} alt="Logo" className="h-24 w-24" />
-          <h1 className="text-gray-700 mt-2 text-3xl group-hover:text-violet-900">
+          <h1 className="text-white mt-2 text-3xl group-hover:text-violet-900">
             SpeakEasy
           </h1>
         </div>
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-white">
+          Login
+        </h2>
         <Formik
           initialValues={initialValues}
           validationSchema={LoginValidation}
@@ -102,7 +104,7 @@ const Loginhere = () => {
               <div className="flex items-center justify-center">
                 <button
                   type="submit"
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 >
                   Login
                 </button>
@@ -111,7 +113,7 @@ const Loginhere = () => {
           )}
         </Formik>
         <h1
-          className="flex justify-end text-blue-800 mt-4 cursor-pointer text-xl"
+          className="flex justify-end text-white mt-4 cursor-pointer text-xl"
           onClick={() => Navigate("/signup")}
         >
           signup

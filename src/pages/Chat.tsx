@@ -16,10 +16,12 @@ const Container: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </div>
 );
 
+const socket: Socket = io(`${host}`, { autoConnect: false });
 const Chat: React.FC = () => {
   const [contact, setContact] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(undefined);
   const [currentChat, setCurrentChat] = useState<any>(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const [ChatRoom, setChatRoom] = useState({
     senderId: "",
     reciverId: "",
@@ -27,7 +29,6 @@ const Chat: React.FC = () => {
   });
   const navigate = useNavigate();
   const users = useSelector((state: any) => state.user.userData);
-  const socket: Socket = io(`${host}`, { autoConnect: false });
 
   useEffect(() => {
     if (users) {
@@ -60,14 +61,20 @@ const Chat: React.FC = () => {
       console.log("👽 connected socket server");
       socket.emit("add-online-users", currentUser._id);
     });
+    socket.on("getOnlineUsers", (data: []) => {
+      console.log("getOnline", data);
+      setOnlineUsers(data);
+    });
 
     return () => {
       socket.off("connect");
+      socket.off("getOnlineUsers");
       console.log("stop here also ");
       socket.disconnect();
     };
   }, [socket]);
 
+  // console.log("🚀 ~ file: Chat.tsx:24 ~ onlineUsers:", onlineUsers)
   const handleChange = async (chat: any) => {
     setCurrentChat(chat);
     try {
@@ -93,7 +100,12 @@ const Chat: React.FC = () => {
 
   return (
     <Container>
-      <Contact contact={contact} changeChat={handleChange} socket={socket} />
+      <Contact
+        contact={contact}
+        changeChat={handleChange}
+        socket={socket}
+        onlineUsers={onlineUsers}
+      />
       <div className="h-full w-full">
         {currentChat ? (
           <Chatcontainer
